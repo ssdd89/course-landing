@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>קורס בניית תוכנית — פרקטי | סיון טפלא · איגור שוורצמן · ליאל לוי</title>
+  <meta name="description" content="קורס פרקטי לבניית תוכנית אימון וטכניקה — 3 מאמנים, 5 מפגשים, יישום מלא. למאמנים ומתאמנים מתקדמים."/>
+  <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Suez+One&family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      font-family:'Heebo',sans-serif;
+      background:#000;
+      color:#fff;
+      line-height:1.6;
+      overflow-x:hidden;
+      direction:rtl;
+    }
+    ::selection { background:#FFBF00; color:#000; }
+    a { color:inherit; text-decoration:none; }
+
+    :root {
+      --gold:#FFBF00;
+      --gold-hover:#e6b520;
+      --lime:#C9A84C;
+      --blue:#3C57E5;
+      --card:#131313;
+      --section2:#000;
+      --border:#3E3E3E;
+      --border-light:#565656;
+      --text-primary:#fff;
+      --text-secondary:rgba(255,255,255,0.75);
+      --text-muted:rgba(255,255,255,0.45);
+    }
+
+    .container { max-width:1140px; margin:0 auto; padding:0 32px; }
+
+    /* ── ANNOUNCEMENT BAR ── */
+    .announce-bar {
+      position:fixed; top:0; left:0; right:0; z-index:101;
+      height:36px; display:flex; align-items:center; justify-content:center;
+      background:var(--gold);
+      gap:10px;
+    }
+    .announce-bar a { text-decoration:none; display:flex; align-items:center; gap:10px; }
+    .announce-text {
+      font-size:0.8rem; font-weight:700; color:#000;
+      letter-spacing:0.01em;
+    }
+    .announce-timer {
+      font-family:'IBM Plex Mono',monospace;
+      font-size:0.78rem; font-weight:800; color:#000;
+      background:rgba(0,0,0,0.12); border-radius:4px;
+      padding:2px 8px;
+    }
+    .announce-cta {
+      font-size:0.72rem; font-weight:800; color:#000;
+      background:rgba(0,0,0,0.15); border-radius:4px;
+      padding:3px 10px; white-space:nowrap;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position:fixed; top:36px; left:0; right:0; z-index:100;
+      height:64px; display:flex; align-items:center;
+      background:rgba(0,0,0,0.85);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(62,62,62,0.5);
+    }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; width:100%; }
+    .nav-logo {
+      font-family:'Frank Ruhl Libre',serif;
+      font-size:1.15rem; font-weight:900; color:#fff;
+    }
+    .nav-logo em { font-style:normal; color:var(--gold); }
+    .nav-links { display:flex; gap:32px; align-items:center; }
+    .nav-links a { font-size:0.88rem; color:var(--text-muted); transition:color 0.2s; }
+    .nav-links a:hover { color:#fff; }
+    .btn-nav {
+      padding:0 1rem; height:36px; border-radius:7px; font-size:0.85rem; font-weight:700;
+      background:var(--gold); color:#000; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background-color 0.3s;
+    }
+    .btn-nav:hover { background:var(--gold-hover); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      position:relative; overflow:hidden; text-align:center;
+      padding-top:100px;
+      padding:140px 0 100px;
+      background:
+        radial-gradient(900px 900px at -150px -80px, rgba(255,120,30,0.3) 0%, transparent 75%),
+        radial-gradient(900px 900px at calc(100% + 150px) calc(100% + 80px), rgba(61,90,255,0.35) 0%, transparent 75%);
+    }
+
+    .hero-content { position:relative; z-index:2; max-width:720px; margin:0 auto; }
+
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 20px; border-radius:9999px;
+      background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.2);
+      font-family:'IBM Plex Mono',monospace;
+      font-size:0.75rem; color:var(--lime); font-weight:500;
+      letter-spacing:0.06em; margin-bottom:40px;
+      opacity:0; animation:fadeUp 0.5s 0.3s forwards;
+    }
+    .badge-dot {
+      width:7px; height:7px; border-radius:50%; background:var(--lime);
+      animation:pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(1.5);} }
+
+    .hero h1 {
+      font-family:'Secular One',sans-serif;
+      font-size:clamp(2.6rem,6vw,4.8rem);
+      font-weight:400; letter-spacing:-0.01em; line-height:1.12;
+      margin-bottom:10px;
+      opacity:0; animation:fadeUp 0.5s 0.4s forwards;
+    }
+
+    .rotate-wrapper {
+      display:inline-flex; overflow:hidden; position:relative;
+      padding:0 6px 4px; border-radius:8px;
+      min-width:180px; justify-content:center; vertical-align:baseline;
+    }
+    .rotate-text {
+      display:inline-block; color:var(--gold);
+      animation:textSlideIn 0.4s cubic-bezier(0.22,1,0.36,1) forwards;
+      white-space:nowrap;
+    }
+    @keyframes textSlideIn {
+      from { transform:translateY(110%); opacity:0; }
+      to { transform:translateY(0); opacity:1; }
+    }
+    @keyframes textSlideOut {
+      from { transform:translateY(0); opacity:1; }
+      to { transform:translateY(-120%); opacity:0; }
+    }
+
+    .hero-sub {
+      font-size:clamp(1rem,1.6vw,1.15rem);
+      color:var(--text-secondary); max-width:580px; margin:28px auto 48px;
+      line-height:1.7;
+      opacity:0; animation:fadeUp 0.5s 0.6s forwards;
+    }
+
+    .hero-actions {
+      display:flex; align-items:center; justify-content:center; gap:16px;
+      flex-wrap:wrap; margin-bottom:64px;
+      opacity:0; animation:fadeUp 0.5s 0.8s forwards;
+    }
+    .btn-main {
+      padding:16px 48px; height:56px; border-radius:8px; border:none;
+      background:var(--gold); color:#000;
+      font-family:'Heebo',sans-serif; font-weight:600; font-size:1rem;
+      cursor:pointer; transition:background-color 0.3s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .btn-main:hover { background:var(--gold-hover); }
+    .btn-ghost {
+      padding:15px 36px; height:56px; border-radius:8px;
+      background:transparent; border:1px solid var(--border);
+      color:var(--text-secondary); font-family:'Heebo',sans-serif; font-weight:600; font-size:1rem;
+      cursor:pointer; transition:all 0.3s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .btn-ghost:hover { border-color:var(--border-light); color:#fff; }
+
+    .hero-stats {
+      display:flex; gap:1px; justify-content:center;
+      width:fit-content; margin:0 auto;
+      background:rgba(255,255,255,0.06);
+      border-radius:16px; overflow:hidden;
+      border:1px solid rgba(255,255,255,0.08);
+      opacity:0; animation:fadeUp 0.5s 1s forwards;
+    }
+    .hstat {
+      padding:28px 40px; text-align:center;
+      background:#111; position:relative;
+    }
+    .hstat:not(:last-child)::after {
+      content:''; position:absolute;
+      left:0; top:20%; height:60%; width:1px;
+      background:rgba(255,255,255,0.08);
+    }
+    .hstat .n {
+      font-family:'IBM Plex Mono',monospace;
+      font-size:2.4rem; font-weight:700; color:#fff; line-height:1;
+      letter-spacing:-0.02em;
+    }
+    .hstat .n em { font-style:normal; color:var(--gold); }
+    .hstat .l {
+      font-size:0.7rem; color:rgba(255,255,255,0.4);
+      margin-top:10px; font-weight:500; letter-spacing:0.04em;
+      text-transform:uppercase;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(24px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── VALUE STATEMENT ── */
+    .value-statement {
+      padding:100px 0;
+      text-align:center;
+      position:relative;
+      background:
+        radial-gradient(700px 500px at 50% 50%, rgba(255,191,0,0.04) 0%, transparent 70%),
+        #0c0c0c;
+    }
+    .vs-inner { max-width:780px; margin:0 auto; }
+    .vs-quote {
+      font-family:'Suez One','Frank Ruhl Libre',serif;
+      font-size:clamp(1.7rem,3.5vw,2.9rem);
+      font-weight:400; line-height:1.3; color:#fff;
+      margin-bottom:28px;
+    }
+    .vs-quote em { font-style:normal; color:var(--gold); }
+    .vs-sub {
+      font-size:1rem; color:var(--text-muted);
+      line-height:1.8; max-width:580px; margin:0 auto;
+    }
+    @media(max-width:480px){
+      .dots-visual { display:none; }
+      .value-statement { padding:60px 0; }
+      .vs-quote { font-size:1.4rem; }
+      .vs-sub { font-size:0.88rem; }
+    }
+
+    /* ── GRADIENT SEPARATOR ── */
+    .section-line {
+      height:1px; border:none; margin:0;
+      background:linear-gradient(to right, rgba(1,1,1,0.5) 0%, #3e3e3e 50%, rgba(1,1,1,0.5) 100%);
+    }
+
+    /* ── SECTION SHARED ── */
+    .section-tag {
+      display:inline-flex;
+      align-items:center;
+      gap:14px;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:0.68rem; font-weight:500; letter-spacing:0.22em; text-transform:uppercase;
+      color:var(--gold);
+      margin-bottom:22px;
+    }
+    .section-tag::before,
+    .section-tag::after {
+      content:'';
+      width:28px; height:1px;
+      background:var(--gold);
+      opacity:0.45;
+    }
+    .sh2 {
+      font-family:'Suez One','Frank Ruhl Libre',serif;
+      font-size:clamp(1.8rem,3.5vw,2.8rem);
+      font-weight:400; line-height:1.2; margin-bottom:18px; color:#fff;
+    }
+    .sdesc { font-size:1rem; color:var(--text-muted); max-width:540px; line-height:1.7; }
+
+    .section-head { margin-bottom:60px; }
+    .section-head.center { text-align:center; }
+    .section-head.center .sdesc { margin:0 auto; }
+
+    /* ── PAIN ── */
+    .pain { padding:80px 0; background:#000; }
+    .pain-content { max-width:740px; margin:0 auto; text-align:center; }
+    .pain-lead {
+      font-size:clamp(1.05rem,1.8vw,1.2rem);
+      color:var(--text-secondary); line-height:1.8; margin-bottom:32px;
+    }
+    .pain-lead strong { color:#fff; }
+    .pain-highlight {
+      font-size:clamp(0.95rem,1.5vw,1.05rem);
+      color:#fff; font-weight:600; line-height:1.7;
+      margin-bottom:32px; padding:24px 32px; border-radius:16px;
+      background:var(--card);
+      border:1px solid rgba(62,62,62,0.6);
+      border-right:3px solid var(--lime);
+    }
+    .pain-sub {
+      font-size:1rem; color:var(--text-muted);
+      line-height:1.8; max-width:600px; margin:0 auto;
+    }
+
+    /* ── AUDIENCE ── */
+    .audience { padding:80px 0; background:#0c0c0c; }
+    .aud-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    @media(max-width:640px){ .aud-grid { grid-template-columns:1fr; } }
+    .acard {
+      padding:46px 32px; border-radius:16px;
+      background:var(--card);
+      border:1px solid transparent;
+      border-image:linear-gradient(180deg, rgba(1,1,1,0.5) 0%, #3e3e3e 50%, rgba(1,1,1,0.5) 100%) 1;
+      transition:all 0.3s;
+      position:relative;
+    }
+    .acard {
+      border:1px solid rgba(62,62,62,0.4);
+    }
+    .acard:hover { border-color:rgba(62,62,62,0.8); }
+    .acard .big { font-size:2rem; margin-bottom:16px; }
+    .acard h3 {
+      font-family:'Frank Ruhl Libre',serif;
+      font-size:1.2rem; font-weight:900; margin-bottom:18px; color:#fff;
+    }
+    .acard ul { list-style:none; display:flex; flex-direction:column; gap:14px; }
+    .acard li { display:flex; gap:12px; font-size:0.88rem; color:var(--text-secondary); line-height:1.6; }
+    .acard li::before { content:'✓'; color:var(--lime); font-weight:700; flex-shrink:0; }
+
+    .aud-neg {
+      margin-top:28px; padding:32px 36px; border-radius:16px;
+      background:var(--card); border:1px solid rgba(62,62,62,0.4);
+    }
+    .aud-neg h3 {
+      font-family:'Frank Ruhl Libre',serif;
+      font-size:1.05rem; font-weight:900; color:var(--text-secondary); margin-bottom:16px;
+    }
+    .aud-neg ul { list-style:none; display:flex; flex-direction:column; gap:12px; }
+    .aud-neg li { font-size:0.88rem; color:var(--text-muted); line-height:1.65; display:flex; gap:12px; }
+    .aud-neg li::before { content:'✕'; color:rgba(255,100,100,0.7); font-weight:700; flex-shrink:0; }
+    .aud-neg li strong { color:var(--text-secondary); }
+
+    /* ── SYLLABUS TIMELINE ── */
+    .syllabus { padding:80px 0; background:#000; }
+    .syl-timeline { display:flex; flex-direction:column; position:relative; }
+    .syl-step {
+      display:grid; grid-template-columns:64px 1fr; gap:20px;
+      position:relative; align-items:flex-start;
+    }
+    /* vertical connector line */
+    .syl-step:not(:last-child)::after {
+      content:''; position:absolute;
+      right:31px; top:62px; bottom:0;
+      width:2px;
+      background:linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(62,62,62,0.2) 80%, transparent);
+    }
+    .syl-node {
+      display:flex; flex-direction:column; align-items:center;
+      padding-top:24px; position:relative; z-index:1;
+    }
+    .syl-node-circle {
+      width:46px; height:46px; border-radius:50%;
+      background:rgba(255,255,255,0.06); border:1.5px solid rgba(255,255,255,0.3);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:0.78rem; font-weight:700; color:var(--lime);
+      flex-shrink:0; transition:border-color 0.3s, background 0.3s;
+    }
+    .syl-step:hover .syl-node-circle { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.5); }
+    .syl-step.gym-day .syl-node-circle { background:rgba(255,191,0,0.08); border-color:rgba(255,191,0,0.4); color:var(--gold); }
+    .syl-card {
+      background:var(--card); border:1px solid rgba(62,62,62,0.4);
+      border-radius:16px; padding:26px 28px; margin-bottom:16px;
+      transition:border-color 0.3s;
+    }
+    .syl-card:hover { border-color:rgba(255,255,255,0.2); }
+    .syl-step.gym-day .syl-card { border-color:rgba(255,191,0,0.2); }
+    .syl-card-head {
+      display:flex; align-items:center; gap:14px; margin-bottom:12px; flex-wrap:wrap;
+    }
+    .syl-day-tag {
+      font-family:'IBM Plex Mono',monospace;
+      padding:5px 14px; border-radius:9999px;
+      background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15);
+      font-size:0.72rem; font-weight:600; color:var(--lime); flex-shrink:0; white-space:nowrap;
+    }
+    .syl-step.gym-day .syl-day-tag { background:rgba(255,191,0,0.06); border-color:rgba(255,191,0,0.2); color:var(--gold); }
+    .syl-card-title { font-size:0.95rem; font-weight:700; color:#fff; flex:1; }
+    .syl-card-body { font-size:0.87rem; color:var(--text-muted); line-height:1.7; margin-bottom:12px; }
+    .syl-tags { display:flex; flex-wrap:wrap; gap:8px; }
+    .stag {
+      font-family:'IBM Plex Mono',monospace;
+      font-size:0.72rem; padding:4px 12px; border-radius:8px;
+      background:rgba(255,255,255,0.03); border:1px solid rgba(62,62,62,0.5);
+      color:var(--text-muted); font-weight:500;
+    }
+    .stag.gold {
+      background:rgba(255,191,0,0.06); border-color:rgba(255,191,0,0.25); color:var(--gold);
+    }
+
+    /* ── DOTS VISUAL ── */
+    .dots-visual {
+      display:flex; align-items:center; justify-content:center; gap:24px;
+      margin:32px 0; flex-wrap:wrap;
+    }
+    .dots-box {
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:20px 24px; min-width:180px;
+    }
+    .dots-box svg { width:150px; height:150px; }
+    .dots-label { font-size:0.78rem; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; letter-spacing:0.05em; }
+    .dots-arrow { font-size:1.4rem; color:var(--text-muted); }
+
+    /* ── PODCAST PLAYLIST ── */
+    .podcast { padding:80px 0; }
+    .podcast-list {
+      display:flex; flex-direction:column; gap:2px;
+      max-width:680px; margin:0 auto;
+    }
+    .podcast-card {
+      display:flex; align-items:center; gap:14px;
+      padding:10px 12px; border-radius:10px;
+      text-decoration:none; background:transparent;
+      border:1px solid transparent;
+      transition:background 0.2s, border-color 0.2s;
+    }
+    .podcast-card:hover {
+      background:#131313; border-color:rgba(62,62,62,0.6);
+    }
+    .podcast-thumb-wrap {
+      position:relative; flex-shrink:0;
+      width:110px; height:62px; border-radius:7px; overflow:hidden;
+    }
+    .podcast-thumb {
+      width:100%; height:100%; object-fit:cover;
+      display:block; transition:transform 0.3s;
+    }
+    .podcast-card:hover .podcast-thumb { transform:scale(1.05); }
+    .podcast-play-btn {
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.4);
+      opacity:0; transition:opacity 0.2s;
+    }
+    .podcast-card:hover .podcast-play-btn { opacity:1; }
+    .podcast-play-btn svg { width:20px; height:20px; fill:#fff; }
+    .podcast-info { flex:1; min-width:0; }
+    .podcast-ep-num {
+      font-family:'IBM Plex Mono',monospace;
+      font-size:0.6rem; color:var(--gold); letter-spacing:0.1em;
+      margin-bottom:3px;
+    }
+    .podcast-ep-title {
+      font-size:0.88rem; font-weight:600; color:#fff;
+      line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .podcast-arrow {
+      flex-shrink:0; font-size:0.9rem;
+      color:rgba(255,255,255,0.2); transition:color 0.2s;
+    }
+    .podcast-card:hover .podcast-arrow { color:var(--gold); }
+    @media(max-width:600px){
+      .podcast-thumb-wrap { width:80px; height:45px; }
+      .podcast-ep-title { font-size:0.8rem; }
+      .podcast-list { max-width:100%; }
+      .podcast-card { padding:8px; }
+    }
+    .podcast-channel-link {
+      display:inline-flex; align-items:center; gap:8px; margin-top:28px;
+      font-size:0.85rem; color:var(--text-muted); font-weight:600;
+      border:1px solid var(--border); border-radius:9px; padding:8px 16px;
+      transition:color 0.2s, border-color 0.2s;
+    }
+    .podcast-channel-link:hover { color:#fff; border-color:var(--border-light); }
+    .podcast-channel-link svg { width:18px; height:18px; fill:currentColor; }
+    @media(max-width:768px){
+      .podcast-grid { grid-template-columns:repeat(2,1fr); }
+      .podcast-grid.hovered-0,.podcast-grid.hovered-1 { grid-template-columns:1fr 1fr; }
+      .podcast-grid.hovered-2,.podcast-grid.hovered-3 { grid-template-columns:1fr 1fr; }
+    }
+
+    /* ── BONUSES ── */
+    .bonuses { padding:80px 0; background:#0c0c0c; }
+    .bonus-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+    @media(max-width:768px){ .bonus-grid { grid-template-columns:1fr; max-width:480px; margin:0 auto; } }
+    .bonus-card {
+      padding:40px 28px; border-radius:16px;
+      background:var(--card); border:1px solid rgba(62,62,62,0.4);
+      text-align:center; transition:border-color 0.3s;
+    }
+    .bonus-card:hover { border-color:rgba(62,62,62,0.8); }
+    .bonus-icon {
+      width:56px; height:56px; border-radius:14px;
+      background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem; margin:0 auto 20px;
+    }
+    .bonus-card h3 {
+      font-family:'Frank Ruhl Libre',serif;
+      font-size:1.05rem; font-weight:900; margin-bottom:10px; color:#fff;
+    }
+    .bonus-card p { font-size:0.88rem; color:var(--text-muted); line-height:1.65; }
+
+    /* ── INSTRUCTORS ── */
+    .instructors { padding:80px 0; background:#000; }
+    .ins-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+    @media(max-width:1024px){ .ins-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:640px){ .ins-grid { grid-template-columns:1fr; max-width:400px; margin:0 auto; } }
+    .icard {
+      padding:40px 28px; border-radius:16px; text-align:center;
+      background:var(--card); border:1px solid rgba(62,62,62,0.4);
+      transition:border-color 0.3s; position:relative; overflow:hidden;
+    }
+    .icard:hover { border-color:rgba(62,62,62,0.8); }
+    .iavatar {
+      width:220px; height:340px; border-radius:14px;
+      margin:0 auto 22px; overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+      font-size:3.5rem; font-weight:900; color:#fff;
+      border:1px solid rgba(62,62,62,0.6);
+      background:#0d0d0d;
+    }
+    .iavatar img { width:100%; height:100%; object-fit:cover; object-position:center top; }
+    .av-sivan { background:linear-gradient(135deg,#e84c1e,#9b2c2c); }
+    .av-igor  { background:linear-gradient(135deg,#6366f1,#312e81); }
+    .av-liel  { background:linear-gradient(135deg,#0891b2,#1e3a5f); }
+    .iname {
+      font-family:'Frank Ruhl Libre',serif;
+      font-size:1.15rem; font-weight:900; margin-bottom:4px; color:#fff;
+    }
+    .irole {
+      font-family:'Heebo',sans-serif;
+      font-size:0.78rem; font-weight:400; color:rgba(255,191,0,0.7);
+      letter-spacing:0; margin-bottom:16px; line-height:1.5;
+    }
+    .ibio { font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin-bottom:18px; }
+    .ibio .draft-note { display:block; color:var(--gold); font-size:0.78rem; font-weight:600; margin-bottom:6px; }
+    .itags { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+    .itag {
+      font-family:'IBM Plex Mono',monospace;
+      font-size:0.68rem; padding:4px 10px; border-radius:8px;
+      background:rgba(255,255,255,0.03); border:1px solid rgba(62,62,62,0.5); color:var(--text-muted);
+    }
+
+    /* ── PRICING ── */
+    .pricing {
+      padding:80px 0; position:relative; overflow:hidden;
+      background:
+        radial-gradient(600px 500px at 50% 60%, rgba(255,255,255,0.04) 0%, transparent 70%);
+    }
+    .pricing-card {
+      max-width:560px; margin:0 auto; padding:52px 48px; border-radius:16px;
+      background:var(--card); border:1px solid rgba(62,62,62,0.5); position:relative;
+    }
+    .p-early {
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      background:rgba(255,191,0,0.08); border:1px solid rgba(255,191,0,0.3);
+      border-radius:10px; padding:12px 20px; margin-bottom:24px;
+      font-size:0.9rem; color:#fff; font-weight:600; text-align:center;
+    }
+    .p-early-tag {
+      background:var(--gold); color:#000;
+      font-size:0.65rem; font-weight:800; letter-spacing:0.1em;
+      text-transform:uppercase; padding:3px 9px; border-radius:5px;
+      white-space:nowrap;
+    }
+    .pricing-pill {
+      position:absolute; top:-15px; left:50%; transform:translateX(-50%);
+      background:var(--gold); color:#000; font-size:0.78rem; font-weight:700;
+      padding:7px 24px; border-radius:9999px; white-space:nowrap;
+    }
+    .p-label {
+      font-family:'IBM Plex Mono',monospace;
+      font-size:0.72rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+      color:var(--lime); margin-bottom:10px;
+    }
+    .p-title {
+      font-family:'Frank Ruhl Libre',serif;
+      font-size:1.6rem; font-weight:900; margin-bottom:8px; color:#fff;
+    }
+    .p-desc { font-size:0.9rem; color:var(--text-muted); margin-bottom:36px; }
+    .p-features { list-style:none; display:flex; flex-direction:column; gap:14px; margin-bottom:40px; }
+    .p-features li { display:flex; align-items:flex-start; gap:12px; font-size:0.9rem; color:var(--text-secondary); }
+    .p-check {
+      width:20px; height:20px; border-radius:50%; flex-shrink:0;
+      background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2);
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.6rem; color:var(--lime); margin-top:2px;
+    }
+    .p-cta {
+      width:100%; padding:16px; height:56px; border-radius:8px;
+      background:var(--gold); color:#000;
+      font-family:'Heebo',sans-serif; font-weight:600; font-size:1rem;
+      border:none; cursor:pointer; transition:background-color 0.3s; margin-bottom:16px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .p-cta:hover { background:var(--gold-hover); }
+    .p-note { text-align:center; font-size:0.8rem; color:var(--text-muted); }
+    .p-policy {
+      margin-top:20px;
+      display:flex; gap:16px; justify-content:center;
+      flex-wrap:wrap;
+    }
+    .p-policy-row {
+      display:flex; align-items:center; gap:6px;
+      font-size:0.73rem; color:rgba(255,255,255,0.3);
+    }
+    .p-policy-icon { font-size:0.65rem; }
+    .p-policy-icon.ok { color:rgba(107,207,138,0.5); }
+    .p-policy-icon.no { color:rgba(255,100,100,0.4); }
+    .p-policy-sep { color:rgba(255,255,255,0.12); font-size:0.8rem; }
+
+    /* ── TEMPLATE PREVIEW ── */
+    .tpl-preview {
+      margin-top:48px;
+    }
+    .tpl-label {
+      text-align:center;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
+      color:rgba(255,255,255,0.3); margin-bottom:20px;
+    }
+    .tpl-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:16px;
+    }
+    .tpl-item {
+      border-radius:12px; overflow:hidden;
+      border:1px solid rgba(62,62,62,0.5);
+      position:relative;
+    }
+    .tpl-item img {
+      width:100%; display:block;
+      filter:blur(5px) brightness(0.85);
+      transform:scale(1.03);
+    }
+    @media(max-width:600px){
+      .tpl-grid { grid-template-columns:1fr; }
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding:48px 0;
+      border-top:1px solid rgba(62,62,62,0.4);
+      text-align:center;
+    }
+    .f-logo {
+      font-family:'Frank Ruhl Libre',serif;
+      font-size:1.05rem; font-weight:900; margin-bottom:8px; color:var(--text-muted);
+    }
+    .f-logo em { font-style:normal; color:var(--gold); }
+    footer p { font-size:0.8rem; color:var(--text-muted); }
+
+    /* ── FADE IN ── */
+    .fi-anim { opacity:0; transform:translateY(24px); transition:opacity 0.6s ease,transform 0.6s ease; }
+    .fi-anim.vis { opacity:1; transform:translateY(0); }
+
+    /* ══ RESPONSIVE ══ */
+    @media(max-width:768px){
+      .container { padding:0 20px; }
+      .pain,.audience,.syllabus,.bonuses,.instructors,.pricing { padding:48px 0; }
+      .hero { padding:120px 0 64px;
+        background:
+          radial-gradient(500px 500px at -80px -40px, rgba(255,120,30,0.25) 0%, transparent 75%),
+          radial-gradient(500px 500px at calc(100% + 80px) calc(100% + 40px), rgba(61,90,255,0.3) 0%, transparent 75%);
+      }
+      .hero-stats { display:grid; grid-template-columns:1fr 1fr; width:100%; border-radius:12px; gap:1px; }
+      .hstat { padding:18px 16px; }
+      .hstat::after { display:none; }
+      .hstat .n { font-size:1.8rem; }
+      .syl-step { grid-template-columns:48px 1fr; gap:14px; }
+      .syl-node-circle { width:38px; height:38px; font-size:0.7rem; }
+      .syl-step:not(:last-child)::after { right:23px; top:50px; }
+      .syl-card { padding:20px 20px; margin-bottom:12px; }
+      .pricing-card { padding:44px 28px; }
+      .ins-grid { gap:16px; }
+    }
+    @media(max-width:480px){
+      .container { padding:0 16px; }
+      nav { height:56px; }
+      .nav-links { display:none; }
+      .btn-nav { height:32px; font-size:0.8rem; padding:0 14px; }
+      .hero { padding:120px 0 48px; }
+      .hero h1 { font-size:2rem; line-height:1.18; }
+      .hero-sub { font-size:0.88rem; margin:20px auto 32px; max-width:100%; }
+      .hero-badge { font-size:0.65rem; padding:5px 12px; line-height:1.5; text-align:center; justify-content:center; flex-wrap:wrap; }
+      .hero-actions { flex-direction:column; align-items:stretch; gap:10px; }
+      .btn-main,.btn-ghost { width:100%; height:50px; font-size:0.95rem; }
+      .hero-stats { border-radius:12px; }
+      .hstat { padding:14px 10px; }
+      .hstat .n { font-size:1.5rem; }
+      .hstat .l { font-size:0.65rem; }
+      .sh2 { font-size:1.5rem; line-height:1.25; }
+      .sdesc { font-size:0.9rem; }
+      .section-tag { font-size:0.62rem; gap:10px; }
+      .pain-lead { font-size:0.95rem; }
+      .pain-highlight { padding:18px 20px; font-size:0.9rem; }
+      .pain-sub { font-size:0.9rem; }
+      .acard { padding:28px 20px; border-radius:14px; }
+      .acard .big { font-size:1.6rem; margin-bottom:12px; }
+      .acard h3 { font-size:1.05rem; }
+      .acard li { font-size:0.82rem; gap:10px; }
+      .aud-neg { padding:22px 20px; border-radius:14px; }
+      .aud-neg h3 { font-size:0.95rem; }
+      .aud-neg li { font-size:0.82rem; }
+      .syl-step { grid-template-columns:44px 1fr; gap:12px; }
+      .syl-node-circle { width:34px; height:34px; font-size:0.65rem; }
+      .syl-step:not(:last-child)::after { right:21px; top:46px; }
+      .syl-card { padding:18px 16px; margin-bottom:10px; border-radius:14px; }
+      .syl-day-tag { font-size:0.62rem; padding:3px 9px; }
+      .syl-card-title { font-size:0.85rem; }
+      .syl-card-body { font-size:0.82rem; }
+      .stag { font-size:0.68rem; padding:3px 8px; }
+      .bonus-card { padding:28px 20px; border-radius:14px; }
+      .bonus-icon { width:48px; height:48px; font-size:1.2rem; border-radius:12px; }
+      .bonus-card h3 { font-size:0.95rem; }
+      .bonus-card p { font-size:0.82rem; }
+      .icard { padding:28px 20px; border-radius:14px; }
+      .iavatar { width:160px; height:240px; }
+      .iname { font-size:1rem; }
+      .irole { font-size:0.68rem; }
+      .ibio { font-size:0.8rem; }
+      .itag { font-size:0.62rem; padding:3px 8px; }
+      .pricing-card { padding:36px 20px; border-radius:16px; }
+      .pricing-pill { font-size:0.68rem; padding:5px 16px; top:-12px; }
+      .p-title { font-size:1.2rem; }
+      .p-desc { font-size:0.85rem; }
+      .p-features li { font-size:0.85rem; }
+      .p-cta { height:50px; font-size:0.95rem; }
+      .section-head { margin-bottom:36px; }
+      .section-line { margin:0; }
+      footer { padding:36px 0; }
+      footer p { font-size:0.72rem; }
+    }
+
+    /* very small phones */
+    @media(max-width:360px){
+      .hero h1 { font-size:1.75rem; }
+      .hstat { padding:12px 8px; }
+      .hstat .n { font-size:1.3rem; }
+      .btn-main,.btn-ghost { padding:14px 20px; height:46px; font-size:0.88rem; }
+      .announce-text:first-child { display:none; }
+      .announce-bar { gap:6px; }
+      .announce-cta { font-size:0.65rem; padding:2px 7px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ ANNOUNCEMENT BAR ══ -->
+<div class="announce-bar">
+  <a href="#pricing">
+    <span class="announce-text">מחיר מוזל מסתיים בעוד</span>
+    <span class="announce-timer" id="announceCountdown">00:00:00</span>
+    <span class="announce-text">·</span>
+    <span class="announce-cta">להצטרפות ←</span>
+  </a>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav role="navigation" aria-label="ניווט ראשי">
+  <div class="container nav-inner">
+    <div class="nav-logo" aria-label="קורס בניית תוכנית — פרקטי">קורס בניית תוכנית — <em>פרקטי</em></div>
+    <div class="nav-links">
+      <a href="#syllabus">תוכן הקורס</a>
+      <a href="#instructors">המרצים</a>
+      <a href="#pricing">הצטרפות</a>
+    </div>
+    <button class="btn-nav" aria-label="לפרטים ורישום" onclick="document.querySelector('#pricing').scrollIntoView({behavior:'smooth'})">לפרטים ורישום ←</button>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="badge-dot"></div>
+        מחזור פילוט · מקומות מוגבלים · מחיר מוזל חד פעמי
+      </div>
+
+      <h1>
+        <span>הפכו למאמנים</span><br/>
+        <span>שבאמת <span class="rotate-wrapper"><span class="rotate-text" id="rotateText">מביאים תוצאות</span></span></span>
+      </h1>
+
+      <p class="hero-sub">
+        חמישה מפגשים. שלושה מאמנים שעושים את זה בפועל כל יום.
+        תצאו עם שיטה ברורה וקבצים שאפשר להתחיל לעבוד איתם מחר.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#pricing" class="btn-main">אני רוצה להצטרף ←</a>
+        <a href="#syllabus" class="btn-ghost">לתוכן הקורס</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="n">3</div>
+          <div class="l">מאמנים פעילים</div>
+        </div>
+        <div class="hstat">
+          <div class="n">5</div>
+          <div class="l">ימי קורס</div>
+        </div>
+        <div class="hstat">
+          <div class="n">100<em>%</em></div>
+          <div class="l">פרקטי + קבצים</div>
+        </div>
+        <div class="hstat">
+          <div class="n"><em>פילוט</em></div>
+          <div class="l">מחיר מוזל חד פעמי</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-line"/>
+
+<!-- ══ PAIN ══ -->
+<section class="pain">
+  <div class="container">
+    <div class="pain-content fi-anim">
+      <div class="section-tag">בואו נודה על האמת</div>
+      <h2 class="sh2">קורס ההסמכה נתן לכם תעודה.<br/>להיות מאמן טוב? זה דבר אחר לגמרי.</h2>
+
+      <p class="pain-lead">
+        יצאתם עם תעודה. אבל כשישבתם מול הלקוח הראשון וניסיתם לבנות לו תוכנית, <strong>הבנתם שמשהו חסר.</strong>
+        בכל שנה מתווספים לתחום כ-2,500 מאמנים חדשים. כולם עם אותה תעודה, אותה הכשרה, אותו חומר.
+      </p>
+
+      <div class="pain-highlight">
+        הדבר היחיד שיבדיל אתכם — לדעת לבנות תוכנית שעובדת. לא לנחש. לא לאלתר. לדעת.
+      </div>
+
+      <p class="pain-lead">
+        האינסטגרם מציף אתכם בתוכן. כל פוסט סותר את הקודם.
+        <strong>אחרי מספיק סקרולים, מפסיקים לדעת מה נכון ומתחילים לנחש.</strong>
+      </p>
+
+      <p class="pain-lead">
+        עשיתם קורסים נוספים. השתלמויות. ספרים. פודקאסטים.
+        <strong>ויצאתם מבולבלים יותר ממקודם.</strong>
+        או שצברתם המון נקודות ידע, בלי שום דבר שמחבר אותן לתמונה אחת ברורה.
+      </p>
+
+      <!-- SVG נסתר לדגימת נקודות מהנתיב האמיתי -->
+      <svg id="armPathSource" style="position:absolute;visibility:hidden;width:0;height:0;" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+        <path id="armSamplePath" d="M12.804 22.277c-.057-.349-.124-.679-.206-.973-.62-2.223-1.14-3.164-.918-5.494.29-1.584.273-4.763 4.483-4.268 1.112.131 2.843.927 3.834.91.567-.01.98-1.157 1.017-1.539.051-.526-.865-1.42-1.248-1.554-.383-.134-2.012-.631-2.681-.824-1.039-.301-.985-1.705-1.051-2.205-.031-.235.084-.467.294-.591.21-.124.375-.008.579.125l.885.648c.497.426-.874 1.24-.503 1.376 0 0 1.755.659 2.507.796.412.075 1.834-1.529 1.917-2.47.065-.74-3.398-4.083-5.867-5.381-.868-.456-1.377-.721-1.949-.694-.683.032-.898.302-1.748 1.03C8.302 4.46 4.568 11.577 4.02 13.152c-2.246 6.461-2.597 9.865-2.677 11.788-.049.59-.076 1.177-.076 1.758.065 0-1 5 0 6s5.326 1 5.326 1c10 3.989 28.57 2.948 28.57-7.233 0-12.172-18.813-10.557-22.359-4.188z"/>
+      </svg>
+
+      <div class="dots-visual fi-anim" aria-hidden="true">
+        <div class="dots-box">
+          <svg id="armScattered" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"></svg>
+          <span class="dots-label">ידע מפוזר</span>
+        </div>
+        <div class="dots-arrow">←</div>
+        <div class="dots-box">
+          <svg id="armConnected" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"></svg>
+          <span class="dots-label" style="color:var(--gold);">שיטה עובדת 💪</span>
+        </div>
+      </div>
+
+      <p class="pain-sub">
+        הקורס הזה נועד לסגור את הפער בין מי שיש לו תעודה לבין מי שיודע באמת לאמן.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="section-line"/>
+
+<!-- ══ AUDIENCE ══ -->
+<section class="audience">
+  <div class="container">
+    <div class="section-head center fi-anim">
+      <div class="section-tag">למי זה מיועד</div>
+      <h2 class="sh2">הקורס הזה לא בשביל כולם</h2>
+    </div>
+    <div class="aud-grid fi-anim">
+      <div class="acard">
+        <div class="big">🎯</div>
+        <h3>הקורס מתאים לכם אם:</h3>
+        <ul>
+          <li>סיימתם הסמכה, אולי גם השתלמות, ועדיין לא בטוחים איך בונים תוכנית אמיתית</li>
+          <li>אין לכם עדיין לקוחות, ורוצים להגיע מוכנים — לא ללמוד על חשבון הלקוח הראשון</li>
+          <li>יש לכם לקוחות, אבל לפעמים אתם לא בטוחים למה התוכנית לא עובדת כמו שציפיתם</li>
+          <li>מאמנים כבר כמה שנים, אבל הרגשה ש"משהו חסר" לא עוזבת</li>
+          <li>נמאס לקרוא פוסטים ולהרגיש שאתם יודעים יותר ומבינים פחות</li>
+          <li>מבינים שאין דרך קלה לשם, ומוכנים להשקיע בלמידה שמחזיקה לאורך זמן</li>
+        </ul>
+      </div>
+      <div class="acard">
+        <div class="big">💪</div>
+        <h3>מתאמנים מתקדמים? גם אתם כאן</h3>
+        <ul>
+          <li>מאמנים את עצמכם ורוצים להבין אם מה שאתם עושים הגיוני</li>
+          <li>מכירים מושגים — RPE, אורך מתח, פריודיזציה — אבל בלי קשר ברור ביניהם</li>
+          <li>מתכוננים לתחרות ורוצים לקחת אחריות אמיתית על התהליך</li>
+          <li>רוצים להבין טכניקה ולא רק לצפות בסרטוני ביקורת ביוטיוב</li>
+        </ul>
+      </div>
+    </div>
+    <div class="aud-neg fi-anim">
+      <h3>הקורס לא מתאים לכם אם:</h3>
+      <ul>
+        <li><strong>אתם מחפשים שיטה קסומה</strong> שלא דורשת הבנה אמיתית. כזו לא קיימת.</li>
+        <li><strong>אתם מחפשים לצפות ולהמשיך הלאה.</strong> הקורס מצריך עשייה. מי שלא מתכוון ליישם, יחסוך לכולנו זמן.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="section-line"/>
+
+<!-- ══ SYLLABUS ══ -->
+<section class="syllabus" id="syllabus">
+  <div class="container">
+    <div class="section-head center fi-anim">
+      <div class="section-tag">תוכן הקורס</div>
+      <h2 class="sh2">חמישה מפגשים. מהיסודות עד לחדר כושר.</h2>
+      <p class="sdesc">מבנה מדורג שבונה שכבה על שכבה, ומסתיים ביום מעשי שלא ניתן ללמוד ממנו בזום.</p>
+    </div>
+    <div class="syl-timeline fi-anim">
+
+      <div class="syl-step">
+        <div class="syl-node"><div class="syl-node-circle">01</div></div>
+        <div class="syl-card">
+          <div class="syl-card-head">
+            <div class="syl-day-tag">שישי · 5/6</div>
+            <div class="syl-card-title">קווים מנחים לבניית תוכנית אימון: יישור קו</div>
+          </div>
+          <p class="syl-card-body">משתני האימון, הקשרים ביניהם ועקרונות הפרוגרשן — המסגרת השיטתית שעליה כל תוכנית נשענת.</p>
+          <div class="syl-tags">
+            <span class="stag">משתני האימון</span><span class="stag">תבניות תנועה</span><span class="stag">היררכיה בבניה</span><span class="stag">פרוגרשן</span><span class="stag">בחירת חזרות</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="syl-step">
+        <div class="syl-node"><div class="syl-node-circle">02</div></div>
+        <div class="syl-card">
+          <div class="syl-card-head">
+            <div class="syl-day-tag">שישי · 12/6</div>
+            <div class="syl-card-title">היפרטרופיה</div>
+          </div>
+          <p class="syl-card-body">מנגנוני גדילת שריר, מניפולציות נפח ועומס, ניהול כשל וסדר תרגילים — פרוטוקול ברור לכל מטרה.</p>
+          <div class="syl-tags">
+            <span class="stag">בחירת חזרות</span><span class="stag">קצב תנועה</span><span class="stag">כשל</span><span class="stag">אופן ביצוע</span><span class="stag">מניפולציות</span><span class="stag">מיקוד שריר בפיגור</span><span class="stag">אורך מתח שריר</span><span class="stag">מיתוסים נפוצים</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="syl-step">
+        <div class="syl-node"><div class="syl-node-circle">03</div></div>
+        <div class="syl-card">
+          <div class="syl-card-head">
+            <div class="syl-day-tag">שישי · 19/6</div>
+            <div class="syl-card-title">כוח: מתודולוגיה ופריודיזציה</div>
+          </div>
+          <p class="syl-card-body">פריודיזציה מבוססת מטרה, אסטרטגיות פיק ודילואד, ניהול תקרות ביצוע — תכנון כוח לטווח ארוך.</p>
+          <div class="syl-tags">
+            <span class="stag">ממה מורכב כוח</span><span class="stag">פריודיזציה</span><span class="stag">אסטרטגיות פיקינג</span><span class="stag">תרגילי משקל גוף</span><span class="stag">תרגילי עזר</span><span class="stag">נקודות חולשה</span><span class="stag">דילואד</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="syl-step">
+        <div class="syl-node"><div class="syl-node-circle">04</div></div>
+        <div class="syl-card">
+          <div class="syl-card-head">
+            <div class="syl-day-tag">שישי · 26/6</div>
+            <div class="syl-card-title">ביומכניקה ובניית טכניקה</div>
+          </div>
+          <p class="syl-card-body">ביומכניקה פונקציונלית, אנליזת תנועה ופרוטוקול תיקון טכניקה — מותאם לאנטומיה הספציפית של כל מתאמן.</p>
+          <div class="syl-tags">
+            <span class="stag">ביומכניקה בסיסית</span><span class="stag">מנופים</span><span class="stag">בנץ</span><span class="stag">דדליפט</span><span class="stag">טעויות נפוצות</span><span class="stag">בניית טכניקה למתחיל</span><span class="stag">טכניקות אימון</span><span class="stag">טמפו</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="syl-step gym-day">
+        <div class="syl-node"><div class="syl-node-circle">05</div></div>
+        <div class="syl-card">
+          <div class="syl-card-head">
+            <div class="syl-day-tag">שישי · 3/7</div>
+            <div class="syl-card-title">יום מעשי: ניתוח ותיקון תנועה</div>
+          </div>
+          <p class="syl-card-body">יישום מלא בחדר כושר: הדגמות חיות, תיקון טכניקה בזמן אמת, וסימולציה של עבודה מעשית עם מתאמנים.</p>
+          <div class="syl-tags">
+            <span class="stag">תרגילי בסיס</span><span class="stag">תרגילים נפוצים</span><span class="stag">טעויות נפוצות</span><span class="stag">בניית טכניקה</span><span class="stag">טכניקות אימון מתקדמות</span><span class="stag gold">🏋️ חדר כושר פיזי</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="section-line"/>
+
+<!-- ══ BONUSES ══ -->
+<section class="bonuses">
+  <div class="container">
+    <div class="section-head center fi-anim">
+      <div class="section-tag">בונוסים</div>
+      <h2 class="sh2">כמות ערך שלא תקבלו בשום מקום אחר</h2>
+    </div>
+    <div class="bonus-grid fi-anim">
+      <div class="bonus-card">
+        <div class="bonus-icon">📋</div>
+        <h3>מאגר טמפלטים</h3>
+        <p>קבצי Google Sheets מוכנים לעבודה. מורידים, מתאימים לפי הלקוח ומתחילים. לא מתחילים מדף ריק.</p>
+      </div>
+      <div class="bonus-card">
+        <div class="bonus-icon">💬</div>
+        <h3>קבוצה סגורה בווצאפ</h3>
+        <p>שאלות, ספקות, מקרים שמסתבכים. המרצים זמינים לאורך כל הקורס.</p>
+      </div>
+      <div class="bonus-card">
+        <div class="bonus-icon">📖</div>
+        <h3>חומרי לימוד ומקורות מחקר</h3>
+        <p>סיכומים, מאמרים ומקורות רלוונטיים שתוכלו להמשיך לחקור בהם הרבה אחרי שהקורס נגמר.</p>
+      </div>
+      <div class="bonus-card">
+        <div class="bonus-icon">✅</div>
+        <h3>צ'קליסט מקצועי לבניית תוכנית</h3>
+        <p>רשימת ביקורת מסודרת לכל שלב בבניית תוכנית — מהגדרת מטרה ועד בחירת תרגילים. כלי שימושי שאפשר להשתמש בו ישירות עם לקוחות.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-line"/>
+
+<!-- ══ PODCAST ══ -->
+<!--
+  כדי לעדכן סרטונים:
+  1. פתח כל פרק ביוטיוב
+  2. העתק את ה-ID מה-URL: youtube.com/watch?v=VIDEO_ID
+  3. החלף את VIDEO_ID_X בהתאם
+  4. עדכן את data-title לכותרת הפרק
+  5. עדכן את data-href לקישור המלא
+-->
+<section class="podcast">
+  <div class="container">
+    <div class="section-head center fi-anim">
+      <div class="section-tag">פודקאסט</div>
+      <h2 class="sh2">מדברים על פרקטיקה</h2>
+      <p class="sdesc">שיחות על אימון, תוכנית, וכל מה שבאמצע. ישירות מהשטח.</p>
+    </div>
+    <div class="podcast-list fi-anim">
+
+      <a class="podcast-card" href="https://www.youtube.com/watch?v=wrbdBdNUcAM" target="_blank" rel="noopener">
+        <div class="podcast-thumb-wrap">
+          <img class="podcast-thumb" src="https://img.youtube.com/vi/wrbdBdNUcAM/maxresdefault.jpg"
+               onerror="this.src='https://img.youtube.com/vi/wrbdBdNUcAM/hqdefault.jpg'" alt="פרק 1"/>
+          <div class="podcast-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="podcast-info">
+          <div class="podcast-ep-num">פרק 06</div>
+          <div class="podcast-ep-title">דדליפט עם גב עגול</div>
+        </div>
+        <span class="podcast-arrow">←</span>
+      </a>
+
+      <a class="podcast-card" href="https://www.youtube.com/watch?v=LVrMehFdf_s" target="_blank" rel="noopener">
+        <div class="podcast-thumb-wrap">
+          <img class="podcast-thumb" src="https://img.youtube.com/vi/LVrMehFdf_s/maxresdefault.jpg"
+               onerror="this.src='https://img.youtube.com/vi/LVrMehFdf_s/hqdefault.jpg'" alt="פרק 2"/>
+          <div class="podcast-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="podcast-info">
+          <div class="podcast-ep-num">פרק מיוחד</div>
+          <div class="podcast-ep-title">דיבייט על נפח, טווחי חזרות והתאוששות</div>
+        </div>
+        <span class="podcast-arrow">←</span>
+      </a>
+
+      <a class="podcast-card" href="https://www.youtube.com/watch?v=Khy2eToMcD8" target="_blank" rel="noopener">
+        <div class="podcast-thumb-wrap">
+          <img class="podcast-thumb" src="https://img.youtube.com/vi/Khy2eToMcD8/maxresdefault.jpg"
+               onerror="this.src='https://img.youtube.com/vi/Khy2eToMcD8/hqdefault.jpg'" alt="פרק 3"/>
+          <div class="podcast-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="podcast-info">
+          <div class="podcast-ep-num">פרק 03</div>
+          <div class="podcast-ep-title">ניתוח ושיפור טכניקה</div>
+        </div>
+        <span class="podcast-arrow">←</span>
+      </a>
+
+      <a class="podcast-card" href="https://www.youtube.com/watch?v=e6QisdJOG30" target="_blank" rel="noopener">
+        <div class="podcast-thumb-wrap">
+          <img class="podcast-thumb" src="https://img.youtube.com/vi/e6QisdJOG30/maxresdefault.jpg"
+               onerror="this.src='https://img.youtube.com/vi/e6QisdJOG30/hqdefault.jpg'" alt="פרק 4"/>
+          <div class="podcast-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="podcast-info">
+          <div class="podcast-ep-num">פרק 04</div>
+          <div class="podcast-ep-title">חילוקי תוכניות, ספליטים ותדירות אימון</div>
+        </div>
+        <span class="podcast-arrow">←</span>
+      </a>
+
+    </div>
+    <div class="center fi-anim" style="text-align:center">
+      <a class="podcast-channel-link" href="https://www.youtube.com/@מדבריםפרקטיקה" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/>
+        </svg>
+        לכל הפרקים בערוץ היוטיוב
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function(){
+    // Podcast grid hover
+    var grid = document.getElementById('podcastGrid');
+    if(grid){
+      var cards = grid.querySelectorAll('.podcast-card');
+      cards.forEach(function(card){
+        card.addEventListener('mouseenter', function(){
+          var idx = this.getAttribute('data-idx');
+          grid.classList.remove('hovered-0','hovered-1','hovered-2','hovered-3');
+          grid.classList.add('hovered-' + idx);
+        });
+        card.addEventListener('mouseleave', function(){
+          grid.classList.remove('hovered-0','hovered-1','hovered-2','hovered-3');
+        });
+      });
+    }
+
+    // Arm dots visual
+    function buildArmDots(){
+      var srcPath = document.getElementById('armSamplePath');
+      var svgConn = document.getElementById('armConnected');
+      var svgScat = document.getElementById('armScattered');
+      if(!srcPath || !svgConn || !svgScat) return;
+
+      var NS = 'http://www.w3.org/2000/svg';
+
+      // --- CONNECTED (שמאל): זרוע ממולאת + נקודות על הקו ---
+      // הצגת הנתיבים המלאים עם fill זהוב
+      var paths = [
+        { d: 'M15.977 9.36h3.789c.114-.191.147-.439.058-.673l-3.846-4.705V9.36z', fill: 'rgba(255,191,0,0.6)' },
+        { d: 'M12.804 22.277c-.057-.349-.124-.679-.206-.973-.62-2.223-1.14-3.164-.918-5.494.29-1.584.273-4.763 4.483-4.268 1.112.131 2.843.927 3.834.91.567-.01.98-1.157 1.017-1.539.051-.526-.865-1.42-1.248-1.554-.383-.134-2.012-.631-2.681-.824-1.039-.301-.985-1.705-1.051-2.205-.031-.235.084-.467.294-.591.21-.124.375-.008.579.125l.885.648c.497.426-.874 1.24-.503 1.376 0 0 1.755.659 2.507.796.412.075 1.834-1.529 1.917-2.47.065-.74-3.398-4.083-5.867-5.381-.868-.456-1.377-.721-1.949-.694-.683.032-.898.302-1.748 1.03C8.302 4.46 4.568 11.577 4.02 13.152c-2.246 6.461-2.597 9.865-2.677 11.788-.049.59-.076 1.177-.076 1.758.065 0-1 5 0 6s5.326 1 5.326 1c10 3.989 28.57 2.948 28.57-7.233 0-12.172-18.813-10.557-22.359-4.188z', fill: 'rgba(255,191,0,0.6)' },
+        { d: 'M20.63 32.078c-3.16-.332-5.628-1.881-5.767-1.97-.465-.297-.601-.913-.305-1.379s.913-.603 1.38-.308c.04.025 4.003 2.492 7.846 1.467 2.125-.566 3.867-2.115 5.177-4.601.258-.49.866-.676 1.351-.419.488.257.676.862.419 1.351-1.585 3.006-3.754 4.893-6.447 5.606-1.257.332-2.502.374-3.654.253z', fill: 'rgba(200,140,0,0.6)' }
+      ];
+      paths.forEach(function(def){
+        var p = document.createElementNS(NS,'path');
+        p.setAttribute('d', def.d);
+        p.setAttribute('fill', def.fill);
+        svgConn.appendChild(p);
+      });
+
+      // נקודות על קו המתאר
+      var N = 18;
+      var len = srcPath.getTotalLength();
+      for(var i = 0; i < N; i++){
+        var pt = srcPath.getPointAtLength((i / N) * len);
+        var c = document.createElementNS(NS,'circle');
+        c.setAttribute('cx', pt.x.toFixed(2));
+        c.setAttribute('cy', pt.y.toFixed(2));
+        c.setAttribute('r','0.7');
+        c.setAttribute('fill','#fff');
+        c.setAttribute('stroke','#FFBF00');
+        c.setAttribute('stroke-width','0.3');
+        svgConn.appendChild(c);
+      }
+
+      // --- SCATTERED (ימין): אותן נקודות בדיוק, בלי זרוע ובלי קווים ---
+      for(var j = 0; j < N; j++){
+        var pt2 = srcPath.getPointAtLength((j / N) * len);
+        var cs = document.createElementNS(NS,'circle');
+        cs.setAttribute('cx', pt2.x.toFixed(2));
+        cs.setAttribute('cy', pt2.y.toFixed(2));
+        cs.setAttribute('r','0.7');
+        cs.setAttribute('fill','rgba(255,255,255,0.35)');
+        svgScat.appendChild(cs);
+      }
+    }
+
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', buildArmDots);
+    } else {
+      buildArmDots();
+    }
+  })();
+</script>
+
+<hr class="section-line"/>
+
+<!-- ══ INSTRUCTORS ══ -->
+<section class="instructors" id="instructors">
+  <div class="container">
+    <div class="section-head center fi-anim">
+      <div class="section-tag">המרצים</div>
+      <h2 class="sh2">שלושה מאמנים. כל אחד מביא את העומק שלו.</h2>
+      <p class="sdesc">לא מרצים אקדמיים. שלושה אנשים שכותבים תוכניות ומתקנים טכניקה כל שבוע, ומעבירים בדיוק את זה.</p>
+    </div>
+    <div class="ins-grid fi-anim">
+      <div class="icard">
+        <div class="iavatar"><img src="סיון.jpg" alt="סיון טפלא"/></div>
+        <div class="iname">סיון טפלא</div>
+        <p class="ibio">
+          למעלה מעשר שנות אימון אונליין. סגן יו"ר WNBF ישראל ושותף מייסד
+          בקבוצת הפייסבוק הגדולה בישראל לכושר ותזונה.
+          עובד עם מאמנים, מתחרי פיתוח גוף ומתאמנים מתקדמים. מתמחה בתרגום הידע המחקרי לכלים פרקטיים שעובדים בשטח.
+        </p>
+      </div>
+      <div class="icard">
+        <div class="iavatar"><img src="איגור.jpeg" alt="איגור שוורצמן"/></div>
+        <div class="iname">איגור שוורצמן</div>
+        <p class="ibio">
+          מאמן כוח עם ניסיון בהכנה תחרותית לפאוורליפטינג ובניית תוכניות כוח לטווח ארוך.
+          בוגר קורסים והתלמדות ברמה בינלאומית. עובד עם מאמנים, מתאמנים מנוסים
+          ואוכלוסייה כללית — עם דגש על תכנון ארוך טווח מעשי ושמירה על גמישות לטווח הקצר.
+        </p>
+      </div>
+      <div class="icard">
+        <div class="iavatar"><img src="ליאל.jpeg" alt="ליאל לוי"/></div>
+        <div class="iname">ליאל לוי</div>
+        <p class="ibio">
+          בעל תואר ראשון בחינוך עם התמחות בספורט, ובוגר עשרות קורסים והשתלמויות בארץ ובעולם.
+          מאמן פרונטלי ואונליין לכל שכבות האוכלוסייה — אוכלוסייה כללית, מתאמני עילית ומתחרי כוח.
+          מלווה מקצועי למאמנים.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ VALUE STATEMENT ══ -->
+<section class="value-statement">
+  <div class="container">
+    <div class="vs-inner fi-anim">
+      <p class="vs-quote">
+        מה שתקבלו כאן הוא לא קורס.<br/>
+        זה <em>ידע שמגיע מהשטח, פרקטיקה שנשארת</em><br/>
+        ויחס אישי שלא תמצאו בשום קורס.
+      </p>
+      <p class="vs-sub">
+        שלושה מאמנים שעושים את זה כל יום — בלי תיאוריה ריקה, בלי מצגות. רק כלים שתשתמשו בהם מהיום שאחרי.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="section-line"/>
+
+<!-- ══ PRICING ══ -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-head center fi-anim">
+      <div class="section-tag">הצטרפות</div>
+      <h2 class="sh2">מה כלול בקורס</h2>
+      <p class="sdesc">מחזור פילוט · יוני–יולי 2026 · מקומות מוגבלים · מחיר מוזל עד 15.5</p>
+    </div>
+    <div class="pricing-card fi-anim">
+      <div class="pricing-pill">מחזור פילוט — מחיר מוזל עד 15.5</div>
+      <div class="p-label">5/6 · 12/6 · 19/6 · 26/6 · 3/7</div>
+      <div class="p-title">קורס בניית תוכנית — פרקטי</div>
+      <div class="p-desc">3 מאמנים · 4 מפגשי זום + יום מעשי בחדר כושר</div>
+      <ul class="p-features">
+        <li><div class="p-check">✓</div>4 מפגשי זום לייב — עם שלושת המרצים, לא הקלטה ישנה</li>
+        <li><div class="p-check">✓</div>יום מעשי בחדר כושר — הדגמות חיות ותיקון טכניקה בזמן אמת</li>
+        <li><div class="p-check">✓</div>קבצי Google Sheets — תבניות עבודה שהמרצים משתמשים בהן עצמם</li>
+        <li><div class="p-check">✓</div>הקלטות של כל מפגשי הזום לצפייה חוזרת</li>
+        <li><div class="p-check">✓</div>קבוצת וואטסאפ סגורה עם גישה ישירה לשלושת המרצים</li>
+        <li><div class="p-check">✓</div>שיטות ברורות לכוח, היפרטרופיה וכלל האוכלוסיות — שאפשר ליישם מיד</li>
+      </ul>
+      <a href="https://secure.cardcom.solutions/EA/EA5/5KgzZYpdUGdJXUe1ZgtBQ/PaymentSP" target="_blank" class="p-cta">לפרטים ורישום ←</a>
+
+      <div class="p-policy">
+        <div class="p-policy-row">
+          <span class="p-policy-icon ok">✓</span>
+          ביטול עד 5/5 — החזר של 50%
+        </div>
+        <span class="p-policy-sep">·</span>
+        <div class="p-policy-row">
+          <span class="p-policy-icon no">✕</span>
+          לאחר 5/5 — לא ניתן לבטל
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer role="contentinfo">
+  <div class="container">
+    <div class="f-logo">קורס בניית תוכנית<em>.</em></div>
+    <p>קורס בניית תוכנית אימון וטכניקה · סיון טפלא · איגור שוורצמן · ליאל לוי</p>
+    <div style="margin-top:16px; font-size:0.7rem; color:rgba(255,255,255,0.25); line-height:1.6;">
+      <p>הצהרת נגישות: אנו פועלים להנגיש את האתר לאנשים עם מוגבלויות בהתאם לתקן הישראלי (ת"י 5568) ולהנחיות WCAG 2.0 ברמה AA.
+      נתקלתם בבעיית נגישות? פנו אלינו ונשמח לסייע.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Accessibility Widget (UserWay - free) -->
+<script>
+  (function(d){
+    var s = d.createElement("script");
+    s.setAttribute("data-account", "free");
+    s.setAttribute("src", "https://cdn.userway.org/widget.js");
+    s.async = true;
+    (d.body || d.head).appendChild(s);
+  })(document);
+</script>
+
+<script>
+  // ── Announcement Countdown ──
+  (function(){
+    const deadline = new Date('2026-05-15T23:59:59');
+    const el = document.getElementById('announceCountdown');
+    function tick(){
+      const diff = deadline - Date.now();
+      if (!el) return;
+      if (diff <= 0) { el.closest('.announce-bar').style.display='none'; return; }
+      const d = Math.floor(diff/86400000);
+      const h = Math.floor((diff%86400000)/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      const s = Math.floor((diff%60000)/1000);
+      el.textContent = d>0 ? `${d} ימים` : 'היום בלבד';
+    }
+    tick(); setInterval(tick,1000);
+  })();
+
+  // ── Podcast Carousel ──
+  const carousel = document.getElementById('podcastCarousel');
+  const dots = document.querySelectorAll('.pc-dot');
+  const cards = carousel ? carousel.querySelectorAll('.podcast-card') : [];
+  const cardCount = cards.length;
+
+  function getCardWidth() {
+    if (!cards[0]) return 0;
+    return cards[0].offsetWidth + 16;
+  }
+
+  function updateDots() {
+    if (!carousel) return;
+    const scrollLeft = carousel.scrollLeft;
+    const cw = getCardWidth();
+    const idx = Math.round(scrollLeft / cw);
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+
+  if (carousel) {
+    carousel.addEventListener('scroll', updateDots, { passive: true });
+
+    document.getElementById('pcNext')?.addEventListener('click', () => {
+      carousel.scrollBy({ left: -getCardWidth(), behavior: 'smooth' });
+    });
+    document.getElementById('pcPrev')?.addEventListener('click', () => {
+      carousel.scrollBy({ left: getCardWidth(), behavior: 'smooth' });
+    });
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        carousel.scrollTo({ left: i * getCardWidth(), behavior: 'smooth' });
+      });
+    });
+  }
+</script>
+
+<script>
+  // ── Text Rotate ──
+  const rotateTexts = ['מביאים תוצאות','יודעים לתכנת','בונים תוכניות','מבינים טכניקה','עושים הבדל','לא מנחשים'];
+  let rotateIndex = 0;
+  const rotateEl = document.getElementById('rotateText');
+  function rotateNext() {
+    rotateEl.style.animation = 'textSlideOut 0.3s cubic-bezier(0.22,1,0.36,1) forwards';
+    setTimeout(() => {
+      rotateIndex = (rotateIndex + 1) % rotateTexts.length;
+      rotateEl.textContent = rotateTexts[rotateIndex];
+      rotateEl.style.animation = 'textSlideIn 0.4s cubic-bezier(0.22,1,0.36,1) forwards';
+    }, 300);
+  }
+  setInterval(rotateNext, 2800);
+
+  // ── Fade-in ──
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fi-anim').forEach(el => obs.observe(el));
+
+  // ── Nav shadow ──
+  window.addEventListener('scroll', () => {
+    document.querySelector('nav').style.boxShadow =
+      window.scrollY > 50 ? '0 2px 24px rgba(0,0,0,0.8)' : 'none';
+  });
+</script>
+</body>
+</html>
